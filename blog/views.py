@@ -12,23 +12,62 @@ from .serializers import PostSerializer
 
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
-from blog.forms import SignUpForm
+from blog.forms import UserForm , ProfileForm , SignInForm , UserLoginForm
+
+
 
 def signup(request):
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save()
+        user_form = UserForm(request.POST)
+        profile_form = ProfileForm(request.POST)
+        if user_form.is_valid():
+            user = user_form.save()
             user.refresh_from_db()  # load the profile instance created by the signal
-            user.profile.birth_date = form.cleaned_data.get('birth_date')
+            # user.profile.birth_date = form.cleaned_data.get('birth_date')
             user.save()
-            raw_password = form.cleaned_data.get('password1')
+
+            profile_form = ProfileForm(request.POST,
+                                       instance=user.profile)  # Reload the profile form with the profile instance
+            profile_form.full_clean()  # Manually clean the form this time. It is implicitly called by "is_valid()" method
+            profile_form.save()
+
+            raw_password = user_form.cleaned_data.get('password1')
             user = authenticate(username=user.username, password=raw_password)
             login(request, user)
             return redirect('index')
     else:
-        form = SignUpForm()
-    return render(request, 'blog/signup.html', {'form': form})
+        user_form = UserForm()
+        profile_form = ProfileForm()
+    return render(request, 'blog/signup.html', {'form': user_form , 'profile_form':profile_form})
+
+
+def signin(request):
+    if request.method == 'POST':
+        signin_form = SignInForm(request.POST)
+        if signin_form.is_valid():
+            username = signin_form.cleaned_data['username']
+            raw_password = signin_form.cleaned_data['password']
+            user = authenticate(request, username=username, password=raw_password)
+            if user is not None:
+                login(request, user)
+                return redirect('index')
+    else:
+        signin_form = SignInForm()
+    return render(request, 'blog/signin.html', {'form': signin_form})
+
+
+def login_view(request):
+    title = "Login"
+    form = UserLoginForm(request.POST or None)
+    if form.is_valid():
+        username = form.cleaned_data.get("username")
+        password = form.cleaned_data.get("password")
+        user = authenticate(username=username, password=password)
+        login(request, user)
+        return redirect('index')
+
+    return render(request,"blog/signin.html", {'form' : form})
+
 
 
 class PostList(APIView):
