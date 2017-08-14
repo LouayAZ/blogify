@@ -15,7 +15,6 @@ from django.shortcuts import render, redirect
 from blog.forms import UserForm , ProfileForm , SignInForm , UserLoginForm
 
 
-
 def signup(request):
     if request.method == 'POST':
         user_form = UserForm(request.POST)
@@ -39,35 +38,6 @@ def signup(request):
         user_form = UserForm()
         profile_form = ProfileForm()
     return render(request, 'blog/signup.html', {'form': user_form , 'profile_form':profile_form})
-
-
-def signin(request):
-    if request.method == 'POST':
-        signin_form = SignInForm(request.POST)
-        if signin_form.is_valid():
-            username = signin_form.cleaned_data['username']
-            raw_password = signin_form.cleaned_data['password']
-            user = authenticate(request, username=username, password=raw_password)
-            if user is not None:
-                login(request, user)
-                return redirect('index')
-    else:
-        signin_form = SignInForm()
-    return render(request, 'blog/signin.html', {'form': signin_form})
-
-
-def login_view(request):
-    title = "Login"
-    form = UserLoginForm(request.POST or None)
-    if form.is_valid():
-        username = form.cleaned_data.get("username")
-        password = form.cleaned_data.get("password")
-        user = authenticate(username=username, password=password)
-        login(request, user)
-        return redirect('index')
-
-    return render(request,"blog/signin.html", {'form' : form})
-
 
 
 class PostList(APIView):

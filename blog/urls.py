@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.contrib.auth import views as auth_views
 
 from . import views
 
@@ -10,10 +11,7 @@ urlpatterns = [
     url(r'^(?P<post_id>[0-9]+)/results/$', views.results, name='results'),
     # ex: /post/5/vote/
     url(r'^(?P<post_id>[0-9]+)/comment/$', views.comment, name='comment'),
-
     url(r'^signup/$', views.signup, name='signup'),
-
-    url(r'^signin/$', views.login_view, name='signin')
-
-    # url(r'login/$', '')
+    url(r'^login/$', auth_views.login, {'template_name': 'blog/login.html'}, name='login'),
+    url(r'^logout/$', auth_views.logout, name='logout'),
 ]
