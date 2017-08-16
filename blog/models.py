@@ -78,3 +78,10 @@ class Share(models.Model):
     def __str__(self):
         temp = '{0.activity}'
         return temp.format(self)
+
+
+class FollowerOf(models.Model):
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, default=None)
+    follower = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, default=None)
+    startDate = models.DateField(timezone.now())
+
