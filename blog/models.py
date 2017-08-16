@@ -1,3 +1,7 @@
+from django.contrib.postgres.fields import ArrayField
+from django.db.models import CharField
+# from django_mysql.models import ListCharField
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -20,17 +24,51 @@ class Profile(models.Model):
             Profile.objects.create(user=instance)
         instance.profile.save()
 
+    relashionships = models.ManyToManyField('self',through='Relationship' ,symmetrical= False, related_name= 'relatd_to')
+
     def __str__(self):
         return "%s " % self.user
+
+RELATIONSHIP_FOLLOWING = 1
+RELATIONSHIP_BLOCKED = 2
+RELATIONSHIP_STATUSES = (
+    (RELATIONSHIP_FOLLOWING, 'Following'),
+    (RELATIONSHIP_BLOCKED, 'Blocked'),
+)
+
+
+class Relationship(models.Model):
+    from_person = models.ForeignKey(Profile,related_name='from_user')
+    to_person = models.ForeignKey(Profile,related_name='to_user')
+    status = models.IntegerField(choices=RELATIONSHIP_STATUSES)
+
+    def __str__(self):
+        temp = '{0.from_person} -> {0.to_person} : {0.status}'
+        return temp.format(self)
 
 
 class Post(models.Model):
     postText = models.CharField(max_length=100)
     pubDate = models.DateField(default=timezone.now())
-    publisher = models.ForeignKey(Profile , on_delete=models.CASCADE,null=True ,default=None)
+    publisher = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, default=None)
+    # tags = ArrayField(models.CharField(max_length=20),size =8, blank=True)
+    # tags = ListCharField(
+    #     base_field=CharField(max_length=10),
+    #     size=6,
+    #     max_length=(6 * 11)  # 6 * 10 character nominals, plus commas
+    # )
 
     def __str__(self):
         temp = '{0.publisher} : {0.postText}'
+        return temp.format(self)
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=30)
+    post = models.ManyToManyField(Post)
+
+    def __str__(self):
+        temp = '{0.name} : {0.post}'
         return temp.format(self)
 
 
@@ -78,10 +116,3 @@ class Share(models.Model):
     def __str__(self):
         temp = '{0.activity}'
         return temp.format(self)
-
-
-class FollowerOf(models.Model):
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, default=None)
-    follower = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, default=None)
-    startDate = models.DateField(timezone.now())
-

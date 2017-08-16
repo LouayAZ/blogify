@@ -4,6 +4,7 @@ from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
+
     url(r'^$', views.index, name='index'),
     # ex: /post/5/
     url(r'^(?P<post_id>[0-9]+)/$', views.details, name='detail'),
