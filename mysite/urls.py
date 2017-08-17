@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^blog/', include('blog.urls')),
     url(r'^blogs/', views.PostList.as_view()),
+    url(r'^followers/', views.FollowersList.as_view()),
 
 ]
 

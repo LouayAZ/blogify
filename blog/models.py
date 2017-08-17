@@ -1,6 +1,4 @@
-from django.contrib.postgres.fields import ArrayField
 from django.db.models import CharField
-# from django_mysql.models import ListCharField
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -8,6 +6,8 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+
+from Crypto.Cipher import AES
 
 # Create your models here.
 
@@ -17,6 +17,7 @@ class Profile(models.Model):
     bio = models.TextField(max_length=500, blank=True)
     location = models.CharField(max_length=30, blank=True)
     birth_date = models.DateField(null=True, blank=True)
+    relationships = models.ManyToManyField('self', through='Relationship', symmetrical=False, related_name='related_to')
 
     @receiver(post_save, sender=User)
     def update_user_profile(sender, instance, created, **kwargs):
@@ -24,10 +25,39 @@ class Profile(models.Model):
             Profile.objects.create(user=instance)
         instance.profile.save()
 
-    relashionships = models.ManyToManyField('self',through='Relationship' ,symmetrical= False, related_name= 'relatd_to')
-
     def __str__(self):
         return "%s " % self.user
+
+    def add_relationship(self, person, status):
+        relationship, created = Relationship.objects.get_or_create(
+            from_person=self,
+            to_person=person,
+            status=status)
+        return relationship
+
+    def remove_relationship(self, person, status):
+        Relationship.objects.filter(
+            from_person=self,
+            to_person=person,
+            status=status).delete()
+        return
+
+    def get_relationships(self, status):
+        return self.relationships.filter(
+            to_people__status=status,
+            to_people__from_person=self)
+
+    def get_related_to(self, status):
+        return self.related_to.filter(
+            from_people__status=status,
+            from_people__to_person=self)
+
+    def get_following(self):
+        return self.get_relationships(RELATIONSHIP_FOLLOWING)
+
+    def get_followers(self):
+        return self.get_related_to(RELATIONSHIP_FOLLOWING)
+
 
 RELATIONSHIP_FOLLOWING = 1
 RELATIONSHIP_BLOCKED = 2
@@ -38,8 +68,8 @@ RELATIONSHIP_STATUSES = (
 
 
 class Relationship(models.Model):
-    from_person = models.ForeignKey(Profile,related_name='from_user')
-    to_person = models.ForeignKey(Profile,related_name='to_user')
+    from_person = models.ForeignKey(Profile,related_name='from_people')
+    to_person = models.ForeignKey(Profile,related_name='to_people')
     status = models.IntegerField(choices=RELATIONSHIP_STATUSES)
 
     def __str__(self):

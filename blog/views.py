@@ -2,12 +2,12 @@
 
 from django.http import HttpResponse
 
-from .models import Post, Comment
+from .models import *
 from django.template import loader
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import PostSerializer
+from .serializers import PostSerializer , FollowerSerializer
 
 
 from django.contrib.auth import login, authenticate
@@ -43,7 +43,18 @@ def signup(request):
 class PostList(APIView):
     def get(self, request):
         posts = Post.objects.all()
-        serializer = PostSerializer(posts , many=True)
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
+
+    def post(self):
+        pass
+
+
+class FollowersList(APIView):
+    def get(self , request):
+        person = Profile.objects.get(pk = request.get_full_path().rsplit('/', 1)[-1])
+        followers = person.get_following()
+        serializer = FollowerSerializer(followers, many=True)
         return Response(serializer.data)
 
     def post(self):
