@@ -1,12 +1,17 @@
-from django.conf.urls import url
+from django.conf.urls import url,include
 from django.contrib.auth import views as auth_views
-
+from rest_framework import routers
 from . import views
 
+
+
+
 urlpatterns = [
+    # url(r'^', include(routers.urls)),
 
     url(r'^$', views.index, name='index'),
-    # ex: /post/5/
+    # ex: /post
+    # ./5/
     url(r'^(?P<post_id>[0-9]+)/$', views.details, name='detail'),
     # ex: /post/5/results/
     url(r'^(?P<post_id>[0-9]+)/results/$', views.results, name='results'),
@@ -15,4 +20,5 @@ urlpatterns = [
     url(r'^signup/$', views.signup, name='signup'),
     url(r'^login/$', auth_views.login, {'template_name': 'blog/login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout, name='logout'),
+
 ]

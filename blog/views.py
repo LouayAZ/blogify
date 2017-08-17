@@ -1,13 +1,15 @@
 # Create your views here.
 
 from django.http import HttpResponse
+from rest_framework import viewsets
+from rest_framework.generics import CreateAPIView
 
 from .models import *
 from django.template import loader
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import PostSerializer , FollowerSerializer
+from .serializers import PostSerializer , FollowerSerializer, ProfileSerializer
 
 
 from django.contrib.auth import login, authenticate
@@ -59,6 +61,16 @@ class FollowersList(APIView):
 
     def post(self):
         pass
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
 
 
 def index(request):
