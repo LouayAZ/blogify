@@ -7,7 +7,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
-from Crypto.Cipher import AES
+
 
 # Create your models here.
 
@@ -81,16 +81,19 @@ class Post(models.Model):
     postText = models.CharField(max_length=100)
     pubDate = models.DateField(default=timezone.now())
     publisher = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, default=None)
-    # tags = ArrayField(models.CharField(max_length=20),size =8, blank=True)
-    # tags = ListCharField(
-    #     base_field=CharField(max_length=10),
-    #     size=6,
-    #     max_length=(6 * 11)  # 6 * 10 character nominals, plus commas
-    # )
 
     def __str__(self):
         temp = '{0.publisher} : {0.postText}'
         return temp.format(self)
+
+    def get_comments(self):
+        post = self
+        activities = Activity.objects.filter(post=post)
+        comments = Comment.objects.filter(activity=activities)
+        return comments
+
+    def get_datiledPost(self):
+        return DetailedPost.objects.filter(post = self)
 
 
 class Tag(models.Model):
@@ -146,3 +149,11 @@ class Share(models.Model):
     def __str__(self):
         temp = '{0.activity}'
         return temp.format(self)
+
+
+class DetailedPost(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE,null=True ,default=None)
+    detailed = models.TextField(max_length=500, blank=True)
+
+    def __str__(self):
+        return self.detailed

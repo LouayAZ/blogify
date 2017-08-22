@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post , Relationship , Profile
+from .models import Post , Relationship , Profile , Comment , Activity
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -19,7 +19,7 @@ class FollowerSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Post
-        fields = ('url', 'postText', 'pubDate', 'publisher')
+        fields = ('url', 'postText', 'pubDate', 'publisher' , 'id')
 
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
@@ -28,3 +28,14 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Profile
         fields = ('username', 'location', 'id')
+
+class ActivitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Activity
+        fields = ('user' ,)
+
+class CommentSerializer(serializers.ModelSerializer):
+    activity = ActivitySerializer()
+    class Meta:
+        model = Comment
+        fields = ('comText' , 'comDate' , 'activity' )

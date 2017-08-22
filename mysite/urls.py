@@ -23,6 +23,8 @@ from django.contrib.auth import views as auth_views
 router = routers.DefaultRouter()
 # routers.register(r'Post', views.PostViewSet)
 router.register(r'Profile', views.ProfileViewSet)
+router.register(r'Post' , views.PostViewSet)
+router.register(r'Comment' , views.PostCommentsViewSet)
 
 router1 = routers.DefaultRouter(trailing_slash=False)
 router1.registry = router.registry[:]
@@ -32,5 +34,5 @@ urlpatterns =[
     url(r'^', include(router.urls)),
     url(r'^', include(router1.urls)),
     url(r'^blogs/', views.PostList.as_view()),
-    url(r'^followers/', views.FollowersList.as_view()),]
+    url(r'^followers/', views.FollowersList.    as_view()),]
 

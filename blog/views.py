@@ -9,7 +9,7 @@ from django.template import loader
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import PostSerializer , FollowerSerializer, ProfileSerializer
+from .serializers import PostSerializer , FollowerSerializer, ProfileSerializer , CommentSerializer
 
 
 from django.contrib.auth import login, authenticate
@@ -71,6 +71,13 @@ class PostViewSet(viewsets.ModelViewSet):
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
+
+
+class PostCommentsViewSet(viewsets.ModelViewSet):
+    id = 8
+    post = Post.objects.get(pk = id)
+    queryset = post.get_comments()
+    serializer_class = CommentSerializer
 
 
 def index(request):
