@@ -25,7 +25,7 @@ router = routers.DefaultRouter()
 router.register(r'Profile', views.ProfileViewSet)
 router.register(r'Post' , views.PostViewSet)
 router.register(r'Comment' , views.PostCommentsViewSet)
-# router.register(r'Followers' , views.FollowerViewSet)
+router.register(r'Followers' , views.FollowerViewSet)
 
 router1 = routers.DefaultRouter(trailing_slash=False)
 router1.registry = router.registry[:]
@@ -35,6 +35,5 @@ urlpatterns =[
     url(r'^', include(router.urls)),
     url(r'^', include(router1.urls)),
     url(r'^blogs/', views.PostList.as_view()),
-    url(r'^followers/', views.FollowersList.    as_view()),
    ]
 

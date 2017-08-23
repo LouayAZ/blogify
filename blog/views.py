@@ -10,7 +10,7 @@ from django.template import loader
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import PostSerializer , ProfileSerializer , CommentSerializer , FollowerSerializer
+from .serializers import PostSerializer , ProfileSerializer , CommentSerializer
 
 
 from django.contrib.auth import login, authenticate
@@ -19,6 +19,8 @@ from blog.forms import UserForm , ProfileForm , SignInForm , UserLoginForm
 
 from rest_framework import status
 from rest_framework.response import Response
+
+from django.shortcuts import get_object_or_404
 
 
 
@@ -57,30 +59,20 @@ class PostList(APIView):
         pass
 
 
-class FollowersList(APIView):
-    def get(self , request):
-        person = Profile.objects.get(pk = request.get_full_path().rsplit('/', 1)[-1])
-        followers = person.get_following()
-        serializer = FollowerSerializer(followers, many=True)
-        return Response(serializer.data)
-
-    def post(self):
-        pass
-
-
 class FollowerViewSet(viewsets.ModelViewSet):
-    person = Profile.objects.get(pk = 8)
-    followers = person.get_following()
-    serializer = ProfileSerializer(followers, many=True)
+    # person = Profile.objects.get(pk = 15)
+    person = get_object_or_404(Profile, pk=11)
+    queryset = person.get_following()
+    serializer_class = ProfileSerializer
 
-    # def retrieve(self, request, pk = None):
-    #     user = Profile.objects.get(pk=pk)
-    #     queryset = user.get_following()
-    #     if not queryset:
-    #         return Response(status=status.HTTP_400_BAD_REQUEST)
-    #     else:
-    #         serializer_class = ProfileSerializer(queryset, many=True)
-    #         return Response(serializer_class.data, status=status.HTTP_200_OK)
+    def retrieve(self, request, pk = 11):
+        user = get_object_or_404(Profile, pk=pk)
+        queryset = user.get_following()
+        if not queryset:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer_class = ProfileSerializer(queryset, many=True)
+            return Response(serializer_class.data, status=status.HTTP_200_OK)
 
 
 class PostViewSet(viewsets.ModelViewSet):

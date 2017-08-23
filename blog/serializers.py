@@ -8,14 +8,6 @@ class PostSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class FollowerSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username')
-
-    class Meta:
-        model = Profile
-        fields = ('username', 'location', 'id')
-
-
 class PostSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Post
