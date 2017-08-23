@@ -36,6 +36,7 @@ class ActivitySerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     activity = ActivitySerializer()
+
     class Meta:
         model = Comment
         fields = ('comText' , 'comDate' , 'activity' )
