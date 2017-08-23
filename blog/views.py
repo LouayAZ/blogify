@@ -10,7 +10,7 @@ from django.template import loader
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import PostSerializer , FollowerSerializer, ProfileSerializer , CommentSerializer
+from .serializers import PostSerializer , ProfileSerializer , CommentSerializer , FollowerSerializer
 
 
 from django.contrib.auth import login, authenticate
@@ -20,7 +20,6 @@ from blog.forms import UserForm , ProfileForm , SignInForm , UserLoginForm
 from rest_framework import status
 from rest_framework.response import Response
 
-from rest_framework.viewsets import ViewSetMixin
 
 
 def signup(request):
@@ -58,7 +57,7 @@ class PostList(APIView):
         pass
 
 
-class FollowersList(ViewSetMixin):
+class FollowersList(APIView):
     def get(self , request):
         person = Profile.objects.get(pk = request.get_full_path().rsplit('/', 1)[-1])
         followers = person.get_following()
@@ -67,6 +66,21 @@ class FollowersList(ViewSetMixin):
 
     def post(self):
         pass
+
+
+class FollowerViewSet(viewsets.ModelViewSet):
+    person = Profile.objects.get(pk = 8)
+    followers = person.get_following()
+    serializer = ProfileSerializer(followers, many=True)
+
+    # def retrieve(self, request, pk = None):
+    #     user = Profile.objects.get(pk=pk)
+    #     queryset = user.get_following()
+    #     if not queryset:
+    #         return Response(status=status.HTTP_400_BAD_REQUEST)
+    #     else:
+    #         serializer_class = ProfileSerializer(queryset, many=True)
+    #         return Response(serializer_class.data, status=status.HTTP_200_OK)
 
 
 class PostViewSet(viewsets.ModelViewSet):

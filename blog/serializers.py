@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post , Relationship , Profile , Comment , Activity
+from .models import *
 
 
 class PostSerializer(serializers.ModelSerializer):
