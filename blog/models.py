@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+import datetime
 
 
 
@@ -79,7 +80,7 @@ class Relationship(models.Model):
 
 class Post(models.Model):
     postText = models.CharField(max_length=100)
-    pubDate = models.DateField(default=timezone.now())
+    pubDate = models.DateField(default=timezone.now)
     publisher = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, default=None)
 
     def __str__(self):
@@ -94,6 +95,21 @@ class Post(models.Model):
 
     def get_datiledPost(self):
         return DetailedPost.objects.filter(post = self)
+
+    def add_comment(self , user , comText):
+        activity = Activity.objects.get_or_create(user=user, post=self)[0]
+        Comment.objects.create(comText = comText,  activity = activity)
+        return
+
+    def like(self , user):
+        activity = Activity.objects.get_or_create(user=user, post=self)[0]
+        Like.objects.create(activity = activity)
+        return
+
+    def bookmark(self , user , comText):
+        activity = Activity.objects.get_or_create(user=user, post=self)[0]
+        Bookmark.objects.create(activity = activity)
+        return
 
 
 class Tag(models.Model):
@@ -116,7 +132,7 @@ class Activity(models.Model):
 
 class Comment(models.Model):
     comText = models.CharField(max_length=100)
-    comDate = models.DateField(default=timezone.now())
+    comDate = models.DateField(default=timezone.now)
     activity = models.ForeignKey(Activity , on_delete=models.CASCADE,null=True ,default=None)
 
     def __str__(self):
@@ -126,7 +142,7 @@ class Comment(models.Model):
 
 class Like(models.Model):
     activity = models.ForeignKey(Activity , on_delete=models.CASCADE,null=True ,default=None)
-    likeDate = models.DateField(default=timezone.now())
+    likeDate = models.DateField(default=timezone.now)
 
     def __str__(self):
         temp = '{0.activity}'
@@ -135,7 +151,7 @@ class Like(models.Model):
 
 class Bookmark(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE,null=True ,default=None)
-    bookmarkDate = models.DateField(default=timezone.now())
+    bookmarkDate = models.DateField(default=timezone.now)
 
     def __str__(self):
         temp = '{0.activity}'
@@ -144,7 +160,7 @@ class Bookmark(models.Model):
 
 class Share(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE,null=True ,default=None)
-    shareDate = models.DateField(default=timezone.now())
+    shareDate = models.DateField(default=timezone.now)
 
     def __str__(self):
         temp = '{0.activity}'
