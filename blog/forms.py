@@ -12,6 +12,13 @@ class UserForm(UserCreationForm):
         fields = ('first_name', 'last_name', 'email', 'username', 'password1', 'password2')
 
 
+class CommentForm(forms.Form):
+    comment = forms.CharField()
+
+    class Meta:
+        fields = ('comment')
+
+
 class ProfileForm(forms.ModelForm):
     birth_date = forms.DateField(help_text='Required. Format: YYYY-MM-DD')
     location = forms.CharField(help_text='Ex : Damascus , Syria')

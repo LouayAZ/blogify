@@ -16,7 +16,7 @@ Including another URLconf
 
 from django.conf.urls import url , include
 from django.contrib import admin
-from blog import views
+from blog import views , urls
 from rest_framework import routers
 from django.contrib.auth import views as auth_views
 
@@ -34,6 +34,6 @@ urlpatterns =[
     url(r'^admin/', admin.site.urls),
     url(r'^', include(router.urls)),
     url(r'^', include(router1.urls)),
-    url(r'^blogs/', views.PostList.as_view()),
+    url(r'^blog/', include('blog.urls')),
    ]
 

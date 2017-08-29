@@ -15,7 +15,7 @@ from .serializers import PostSerializer , ProfileSerializer , CommentSerializer
 
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
-from blog.forms import UserForm , ProfileForm , SignInForm , UserLoginForm
+from blog.forms import UserForm , ProfileForm , SignInForm , UserLoginForm , CommentForm
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -113,7 +113,8 @@ def index(request):
 
 
 def details(request, post_id):
-    return HttpResponse("You're looking at post %s." % post_id)
+    post = Post.objects.get(pk = post_id)
+    return HttpResponse("%s." % post)
 
 
 def results(request, post_id):
@@ -122,4 +123,20 @@ def results(request, post_id):
 
 
 def comment(request, post_id):
-    return HttpResponse("You're commenting on question %s." % post_id)
+    if request.method == 'POST':
+            commentform = CommentForm(request.POST)
+            post = Post.objects.get(pk=post_id)
+
+            if request.user.is_authenticated:
+                print(request.user.id)
+                user = Profile.objects.filter(user=request.user)
+                post.add_comment(user, commentform.data.get('comment'))
+            else:
+                print("la3")
+            return redirect('index')
+    else:
+        commentform = CommentForm()
+    return render(request, 'blog/comment.html', {'form': commentform })
+
+    # return HttpResponse("You're commenting on question %s." % post_id)
+
