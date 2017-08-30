@@ -18,6 +18,13 @@ class CommentForm(forms.Form):
     class Meta:
         fields = ('comment')
 
+class PostForm(forms.Form):
+    postTitle = forms.CharField()
+    detailedPost = forms.CharField()
+
+    class Meta:
+        fields = ('postTitle'  , 'detailedPost')
+
 
 class ProfileForm(forms.ModelForm):
     birth_date = forms.DateField(help_text='Required. Format: YYYY-MM-DD')

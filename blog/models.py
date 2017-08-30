@@ -67,6 +67,11 @@ class Profile(models.Model):
     #     return Share.objects.filter(activity=act)
 
 
+    def add_post(self , postTitle , detailedPost):
+        post = Post.objects.create(publisher = self , postText = postTitle)
+        post.add_detailedPost(detailedPost)
+
+
 
 RELATIONSHIP_FOLLOWING = 1
 RELATIONSHIP_BLOCKED = 2
@@ -110,6 +115,9 @@ class Post(models.Model):
         # tags = Assistant.objects.filter(post=self)
         return tags
 
+    def add_detailedPost(self , detailedPostText):
+        DetailedPost.objects.create(post = self , detailed=detailedPostText)
+
     def get_datiledPost(self):
         return DetailedPost.objects.filter(post=self)
 
@@ -123,9 +131,14 @@ class Post(models.Model):
         Like.objects.create(activity = activity)
         return
 
-    def bookmark(self , user , comText):
+    def bookmark(self , user):
         activity = Activity.objects.get_or_create(user=user, post=self)[0]
         Bookmark.objects.create(activity = activity)
+        return
+
+    def share(self , user):
+        activity = Activity.objects.get_or_create(user=user, post=self)[0]
+        Share.objects.create(activity = activity)
         return
 
 
