@@ -84,17 +84,26 @@ class Post(models.Model):
     publisher = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, default=None)
 
     def __str__(self):
-        temp = '{0.publisher} : {0.postText}'
+        temp = '{0.publisher} : {0.postText} '
         return temp.format(self)
 
     def get_comments(self):
-        post = self
-        activities = Activity.objects.filter(post=post)
+        activities = Activity.objects.filter(post=self)
         comments = Comment.objects.filter(activity=activities)
         return comments
 
+    def get_likes(self):
+        activities = Activity.objects.filter(post=self)
+        likes = Like.objects.filter(activity=activities)
+        return likes
+
+    def get_tags(self):
+        tags = Tag.objects.filter(post=self)
+        # tags = Assistant.objects.filter(post=self)
+        return tags
+
     def get_datiledPost(self):
-        return DetailedPost.objects.filter(post = self)
+        return DetailedPost.objects.filter(post=self)
 
     def add_comment(self , user , comText):
         activity = Activity.objects.get_or_create(user=user, post=self)[0]
@@ -115,10 +124,20 @@ class Post(models.Model):
 class Tag(models.Model):
     name = models.CharField(max_length=30)
     post = models.ManyToManyField(Post)
+    # post = models.ForeignKey(Post, on_delete=models.CASCADE,null=True ,default=None)
 
     def __str__(self):
-        temp = '{0.name} : {0.post}'
+        temp = '{0.name}'
         return temp.format(self)
+
+    def get_posts(self):
+        return self.post.all()
+
+
+# class Assistant(models.Model):
+#     post = models.ForeignKey(Post, on_delete=models.CASCADE)
+#     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+#     dateC = models.DateField()
 
 
 class Activity(models.Model):

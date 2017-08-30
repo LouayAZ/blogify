@@ -1,27 +1,15 @@
 # Create your views here.
-
-from django.http import HttpResponse
-from rest_framework import viewsets
-from rest_framework.decorators import detail_route
-from rest_framework.generics import CreateAPIView
-
-from .models import *
-from django.template import loader
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from .serializers import PostSerializer , ProfileSerializer , CommentSerializer
-
-
 from django.contrib.auth import login, authenticate
-from django.shortcuts import render, redirect
-from blog.forms import UserForm , ProfileForm , SignInForm , UserLoginForm , CommentForm
-
-from rest_framework import status
-from rest_framework.response import Response
-
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-
+from django.shortcuts import render, redirect
+from django.template import loader
+from rest_framework import status
+from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from blog.forms import UserForm, ProfileForm, CommentForm
+from .serializers import *
 
 
 def signup(request):
@@ -102,6 +90,56 @@ class PostCommentsViewSet(viewsets.ModelViewSet):
             return Response(serializer_class.data, status=status.HTTP_200_OK)
 
 
+class PostTagsViewSet(viewsets.ModelViewSet):
+    id = 10
+    post = Post.objects.get(pk=id)
+    # post = Tag.post.through.objects.get(pk = id)
+    queryset = post.get_tags()
+    serializer_class = TagSerializer
+
+    def retrieve(self, request, pk=None):
+        post = Post.objects.get(pk = pk)
+        queryset = post.get_tags()
+        if not queryset:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer_class = TagSerializer(queryset , many=True)
+            return Response(serializer_class.data, status=status.HTTP_200_OK)
+
+
+class TagPostsViewSet(viewsets.ModelViewSet):
+    id = 1
+    tag = Tag.objects.get(pk=id)
+    # post = Tag.post.through.objects.get(pk = id)
+    queryset = tag.get_posts()
+    serializer_class = PostSerializer
+
+    def retrieve(self, request, pk=None):
+        tag = Tag.objects.get(pk = pk)
+        queryset = tag.get_posts()
+        if not queryset:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer_class = PostSerializer(queryset, many=True)
+            return Response(serializer_class.data, status=status.HTTP_200_OK)
+
+
+class PostLikesViewSet(viewsets.ModelViewSet):
+    id =10
+
+    post = Post.objects.get(pk = id)
+    queryset = post.get_likes()
+    serializer_class = LikesSerializer
+
+    def retrieve(self, request, pk=None):
+        post = Post.objects.get(pk=id)
+        queryset = post.get_likes()
+        if not queryset:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer_class = LikesSerializer(queryset, many=True)
+            return Response(serializer_class.data, status=status.HTTP_200_OK)
+
 
 def index(request):
     latest_post_list = Post.objects.order_by('-pubDate')[:5]
@@ -113,7 +151,7 @@ def index(request):
 
 
 def details(request, post_id):
-    post = Post.objects.get(pk = post_id)
+    post = Post.objects.get(pk=post_id)
     return HttpResponse("%s." % post)
 
 
