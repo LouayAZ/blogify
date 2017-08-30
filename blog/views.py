@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from blog.forms import UserForm, ProfileForm, CommentForm
+from blog.forms import *
 from .serializers import *
 
 
@@ -167,14 +167,67 @@ def comment(request, post_id):
 
             if request.user.is_authenticated:
                 print(request.user.id)
-                user = Profile.objects.filter(user=request.user)
+                user = Profile.objects.get(user=request.user)
                 post.add_comment(user, commentform.data.get('comment'))
             else:
                 print("la3")
             return redirect('index')
     else:
         commentform = CommentForm()
-    return render(request, 'blog/comment.html', {'form': commentform })
+    return render(request, 'blog/pforms.html', {'title' : "add comment" , 'form': commentform })
 
     # return HttpResponse("You're commenting on question %s." % post_id)
 
+
+def post(request):
+    if request.method == 'POST':
+        postform = PostForm(request.POST)
+
+        if request.user.is_authenticated:
+            user = Profile.objects.get(user=request.user)
+            user.add_post(postform.data.get('postTitle') , postform.data.get('detailedPost'))
+        return redirect('index')
+    else:
+        postform = PostForm()
+    return render(request , 'blog/pforms.html' , {'title' : "add post" , 'form': postform })
+
+
+def like(request , post_id):
+    if request.method == 'POST':
+            post = Post.objects.get(pk=post_id)
+
+            if request.user.is_authenticated:
+                print(request.user.id)
+                user = Profile.objects.get(user=request.user)
+                post.like(user)
+            else:
+                print("la3")
+            return redirect('index')
+    return render(request , 'blog/pforms.html' , {'title' : "like"})
+
+def bookmark(request , post_id):
+    if request.method == 'POST':
+            post = Post.objects.get(pk=post_id)
+
+            if request.user.is_authenticated:
+                print(request.user.id)
+                user = Profile.objects.get(user=request.user)
+                post.bookmark(user)
+            else:
+                print("la3")
+            return redirect('index')
+    return render(request , 'blog/pforms.html' , {'title' : "bookmark"})
+
+
+def share(request , post_id):
+    if request.method == 'POST':
+            post = Post.objects.get(pk=post_id)
+
+            if request.user.is_authenticated:
+                print(request.user.id)
+                user = Profile.objects.get(user=request.user)
+                post.share(user)
+            else:
+                print("la3")
+            return redirect('index')
+    return render(request , 'blog/pforms.html' , {'title' : "like"})
