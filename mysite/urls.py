@@ -29,6 +29,8 @@ router.register(r'Followers' , views.FollowerViewSet)
 router.register(r'Like' , views.PostLikesViewSet)
 router.register(r'Tags' , views.PostTagsViewSet)
 router.register(r'TagPosts', views.TagPostsViewSet)
+router.register(r'FriendsPosts', views.FriendsPostsViewSet)
+# router.register(r'SharedPosts', views.SharedPosts)
 
 router1 = routers.DefaultRouter(trailing_slash=False)
 router1.registry = router.registry[:]

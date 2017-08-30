@@ -15,7 +15,6 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('postText', 'pubDate' , 'id', )
 
 
-
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     username = serializers.CharField(source='user.username')
 

@@ -126,7 +126,6 @@ class TagPostsViewSet(viewsets.ModelViewSet):
 
 class PostLikesViewSet(viewsets.ModelViewSet):
     id =10
-
     post = Post.objects.get(pk = id)
     queryset = post.get_likes()
     serializer_class = LikesSerializer
@@ -139,6 +138,44 @@ class PostLikesViewSet(viewsets.ModelViewSet):
         else:
             serializer_class = LikesSerializer(queryset, many=True)
             return Response(serializer_class.data, status=status.HTTP_200_OK)
+
+
+class FriendsPostsViewSet(viewsets.ModelViewSet):
+    id = 11
+    user = get_object_or_404(Profile, pk=id)
+    friends = user.get_following()
+
+    queryset = Post.objects.filter(publisher__in =friends)
+    serializer_class = PostSerializer
+
+    def retrieve(self, request, pk=None):
+        user = get_object_or_404(Profile, pk=pk)
+        friends = user.get_following()
+
+        queryset = Post.objects.filter(publisher__in =friends)
+
+        if not queryset:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer_class = PostSerializer(queryset, many=True)
+            return Response(serializer_class.data, status=status.HTTP_200_OK)
+
+
+# class SharedPosts(viewsets.ModelViewSet):
+#     id = 11
+#     user = get_object_or_404(Profile, pk=id)
+#     queryset = user.get_shared_posts()
+#     serializer_class = PostSerializer
+#
+#     def retrieve(self, request, pk=None):
+#         user = get_object_or_404(Profile, pk=pk)
+#         queryset = user.get_shared_posts()
+#
+#         if not queryset:
+#             return Response(status=status.HTTP_400_BAD_REQUEST)
+#         else:
+#             serializer_class = PostSerializer(queryset, many=True)
+#             return Response(serializer_class.data, status=status.HTTP_200_OK)
 
 
 def index(request):

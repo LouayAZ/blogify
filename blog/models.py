@@ -59,6 +59,14 @@ class Profile(models.Model):
     def get_followers(self):
         return self.get_related_to(RELATIONSHIP_FOLLOWING)
 
+    def get_posts(self):
+        return Post.objects.filter(publisher=self)
+
+    # def get_shared_posts(self):
+    #     act = Activity.objects.filter(user=self)
+    #     return Share.objects.filter(activity=act)
+
+
 
 RELATIONSHIP_FOLLOWING = 1
 RELATIONSHIP_BLOCKED = 2
