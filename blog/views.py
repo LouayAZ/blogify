@@ -6,10 +6,15 @@ from django.shortcuts import render, redirect
 from django.template import loader
 from rest_framework import status
 from rest_framework import viewsets
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.generics import CreateAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from blog.forms import *
 from .serializers import *
+
+# from rest_framework.permissions import *
 
 
 def signup(request):
@@ -63,9 +68,16 @@ class FollowerViewSet(viewsets.ModelViewSet):
             return Response(serializer_class.data, status=status.HTTP_200_OK)
 
 
+
+
+
 class PostViewSet(viewsets.ModelViewSet):
+    # permission_classes = (,)
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
@@ -161,21 +173,21 @@ class FriendsPostsViewSet(viewsets.ModelViewSet):
             return Response(serializer_class.data, status=status.HTTP_200_OK)
 
 
-# class SharedPosts(viewsets.ModelViewSet):
-#     id = 11
-#     user = get_object_or_404(Profile, pk=id)
-#     queryset = user.get_shared_posts()
-#     serializer_class = PostSerializer
-#
-#     def retrieve(self, request, pk=None):
-#         user = get_object_or_404(Profile, pk=pk)
-#         queryset = user.get_shared_posts()
-#
-#         if not queryset:
-#             return Response(status=status.HTTP_400_BAD_REQUEST)
-#         else:
-#             serializer_class = PostSerializer(queryset, many=True)
-#             return Response(serializer_class.data, status=status.HTTP_200_OK)
+class SharedPostsViewSet(viewsets.ModelViewSet):
+    id = 11
+    user = get_object_or_404(Profile, pk=id)
+    queryset = user.get_shared_posts()
+    serializer_class = PostSerializer
+
+    def retrieve(self, request, pk=None):
+        user = get_object_or_404(Profile, pk=pk)
+        queryset = user.get_shared_posts()
+
+        if not queryset:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer_class = PostSerializer(queryset, many=True)
+            return Response(serializer_class.data, status=status.HTTP_200_OK)
 
 
 def index(request):
@@ -216,17 +228,17 @@ def comment(request, post_id):
     # return HttpResponse("You're commenting on question %s." % post_id)
 
 
-def post(request):
-    if request.method == 'POST':
-        postform = PostForm(request.POST)
-
-        if request.user.is_authenticated:
-            user = Profile.objects.get(user=request.user)
-            user.add_post(postform.data.get('postTitle') , postform.data.get('detailedPost'))
-        return redirect('index')
-    else:
-        postform = PostForm()
-    return render(request , 'blog/pforms.html' , {'title' : "add post" , 'form': postform })
+# def post(request):
+#     if request.method == 'POST':
+#         postform = PostForm(request.POST)
+#
+#         if request.user.is_authenticated:
+#             user = Profile.objects.get(user=request.user)
+#             user.add_post(postform.data.get('postTitle') , postform.data.get('detailedPost'))
+#         return redirect('index')
+#     else:
+#         postform = PostForm()
+#     return render(request , 'blog/pforms.html' , {'title' : "add post" , 'form': postform } )
 
 
 def like(request , post_id):
@@ -267,4 +279,4 @@ def share(request , post_id):
             else:
                 print("la3")
             return redirect('index')
-    return render(request , 'blog/pforms.html' , {'title' : "like"})
+    return render(request , 'blog/pforms.html' , {'title' : "share"})

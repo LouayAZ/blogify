@@ -15,7 +15,7 @@ urlpatterns = [
     url(r'^(?P<post_id>[0-9]+)/results/$', views.results, name='results'),
     # ex: /post/5/vote/
     url(r'^(?P<post_id>[0-9]+)/comment/$', views.comment, name='comment'),
-    url(r'^addPost/$', views.post, name='addpost'),
+    # url(r'^addPost/$', views.post, name='addpost'),
     url(r'^(?P<post_id>[0-9]+)/like/$', views.like , name='like'),
     url(r'^(?P<post_id>[0-9]+)/share/$', views.share, name='share'),
     url(r'^(?P<post_id>[0-9]+)/bookmark/$', views.bookmark, name='bookmark'),

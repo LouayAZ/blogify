@@ -3,16 +3,20 @@ from .models import *
 
 
 # class PostSerializer(serializers.ModelSerializer):
+#     def create(self, validated_data):
+#         post = Post.objects.create(posttText = validated_data['posText'] )
+#         return post
+#
 #     class Meta:
 #         model = Post
-#         fields = ('postText', 'pubDate', 'id')
+#         fields = '__all__' #('postText', 'pubDate', 'id')
 
 
 class PostSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Post
         # comm = Post.get_comments(Post)
-        fields = ('postText', 'pubDate' , 'id', )
+        fields = '__all__' #('postText', 'pubDate' , 'id', )
 
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
@@ -38,7 +42,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class TagSerializer(serializers.ModelSerializer):
-    post = PostSerializer()
+    # post = PostSerializer()
 
     class Meta:
         model = Tag
@@ -51,3 +55,4 @@ class LikesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
         fields = ('url', 'likeDate', 'activity')
+

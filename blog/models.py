@@ -62,10 +62,11 @@ class Profile(models.Model):
     def get_posts(self):
         return Post.objects.filter(publisher=self)
 
-    # def get_shared_posts(self):
-    #     act = Activity.objects.filter(user=self)
-    #     return Share.objects.filter(activity=act)
-
+    def get_shared_posts(self):
+        act = Share.objects.values_list('activity')
+        act = Activity.objects.filter(pk__in = act)
+        posts = act.values_list('post')
+        return Post.objects.filter(pk__in = posts)
 
     def add_post(self , postTitle , detailedPost):
         post = Post.objects.create(publisher = self , postText = postTitle)
@@ -112,7 +113,6 @@ class Post(models.Model):
 
     def get_tags(self):
         tags = Tag.objects.filter(post=self)
-        # tags = Assistant.objects.filter(post=self)
         return tags
 
     def add_detailedPost(self , detailedPostText):
