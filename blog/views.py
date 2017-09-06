@@ -54,6 +54,8 @@ class PostList(APIView):
 
 class FollowerViewSet(viewsets.ModelViewSet):
     # person = Profile.objects.get(pk = 15)
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
     person = get_object_or_404(Profile, pk=11)
     queryset = person.get_following()
     serializer_class = ProfileSerializer
@@ -81,11 +83,15 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
 
 
 class PostCommentsViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
     id = 8
     print(id)
     post = Post.objects.get(pk = id)
@@ -103,6 +109,8 @@ class PostCommentsViewSet(viewsets.ModelViewSet):
 
 
 class PostTagsViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
     id = 10
     post = Post.objects.get(pk=id)
     # post = Tag.post.through.objects.get(pk = id)
@@ -120,6 +128,8 @@ class PostTagsViewSet(viewsets.ModelViewSet):
 
 
 class TagPostsViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
     id = 1
     tag = Tag.objects.get(pk=id)
     # post = Tag.post.through.objects.get(pk = id)
@@ -137,6 +147,8 @@ class TagPostsViewSet(viewsets.ModelViewSet):
 
 
 class PostLikesViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
     id =10
     post = Post.objects.get(pk = id)
     queryset = post.get_likes()
@@ -153,6 +165,8 @@ class PostLikesViewSet(viewsets.ModelViewSet):
 
 
 class FriendsPostsViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
     id = 11
     user = get_object_or_404(Profile, pk=id)
     friends = user.get_following()
@@ -174,6 +188,8 @@ class FriendsPostsViewSet(viewsets.ModelViewSet):
 
 
 class SharedPostsViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
     id = 11
     user = get_object_or_404(Profile, pk=id)
     queryset = user.get_shared_posts()
