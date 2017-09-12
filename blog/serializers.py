@@ -12,19 +12,34 @@ from .models import *
 #         fields = '__all__' #('postText', 'pubDate', 'id')
 
 
-class PostSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Post
-        # comm = Post.get_comments(Post)
-        fields = '__all__' #('postText', 'pubDate' , 'id', )
-
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     username = serializers.CharField(source='user.username')
+    firstname = serializers.CharField(source='user.first_name')
 
     class Meta:
         model = Profile
-        fields = ('username', 'location', 'id')
+        fields = ('username', 'location', 'id'  , 'firstname' ,)
+
+
+class PostSerializer(serializers.HyperlinkedModelSerializer):
+    publisher = ProfileSerializer(read_only=True)
+
+    class Meta:
+        model = Post
+        # comm = Post.get_comments(Post)
+        fields = ('postText', 'id', 'publisher')
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        post = Post.objects.create(postText = validated_data.pop('postText') , publisher = Profile.objects.get(user=user))
+        return post
+
+
+class PostSerializerAdd(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = '__all__'  # ('postText', 'pubDate' , 'id', )
 
 
 class ActivitySerializer(serializers.ModelSerializer):

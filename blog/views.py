@@ -56,21 +56,22 @@ class FollowerViewSet(viewsets.ModelViewSet):
     # person = Profile.objects.get(pk = 15)
     authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
-    person = get_object_or_404(Profile, pk=11)
-    queryset = person.get_following()
+    # person = get_object_or_404(Profile, pk=11)
+    # queryset = person.get_following()
     serializer_class = ProfileSerializer
 
-    def retrieve(self, request, pk = 11):
-        user = get_object_or_404(Profile, pk=pk)
-        queryset = user.get_following()
-        if not queryset:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        else:
-            serializer_class = ProfileSerializer(queryset, many=True)
-            return Response(serializer_class.data, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        user = user = Profile.objects.get(user= self.request.user)
+        return user.get_following()
 
-
-
+    # def retrieve(self, request, pk = 11):
+    #     user = get_object_or_404(Profile, pk=pk)
+    #     queryset = user.get_following()
+    #     if not queryset:
+    #         return Response(status=status.HTTP_400_BAD_REQUEST)
+    #     else:
+    #         serializer_class = ProfileSerializer(queryset, many=True)
+    #         return Response(serializer_class.data, status=status.HTTP_200_OK)
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -80,6 +81,22 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 
+    # def retrieve(self, request, pk=None):
+    #     if pk == 'add':
+    #         queryset = Post.objects.all()
+    #         serializer_class = PostSerializerAdd(queryset , many=True)
+    #         return Response(serializer_class.data, status=status.HTTP_200_OK)
+    #     else:
+    #         queryset = Post.objects.get(pk=pk)
+    #         serializer_class = PostSerializerAdd(queryset , many=True)
+    #         return Response(serializer_class.data, status=status.HTTP_200_OK)
+
+class PostAddViewSet(viewsets.ModelViewSet):
+    # permission_classes = (,)
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+    queryset = Post.objects.all()
+    serializer_class = PostSerializerAdd
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
@@ -87,6 +104,14 @@ class ProfileViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
+
+    def retrieve(self, request, pk=None):
+        if pk == 'me':
+            queryset = Profile.objects.get(user=self.request.user)
+            serializer_class = ProfileSerializer(queryset)
+            return Response(serializer_class.data, status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class PostCommentsViewSet(viewsets.ModelViewSet):
@@ -167,24 +192,29 @@ class PostLikesViewSet(viewsets.ModelViewSet):
 class FriendsPostsViewSet(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
-    id = 11
-    user = get_object_or_404(Profile, pk=id)
-    friends = user.get_following()
-
-    queryset = Post.objects.filter(publisher__in =friends)
+    # id = 11
+    # user = get_object_or_404(Profile, pk=id)
+    # friends = user.get_following()
+    #
+    # queryset = Post.objects.filter(publisher__in =friends)
     serializer_class = PostSerializer
 
-    def retrieve(self, request, pk=None):
-        user = get_object_or_404(Profile, pk=pk)
+    def get_queryset(self):
+        user = Profile.objects.get(user= self.request.user)
         friends = user.get_following()
+        return Post.objects.filter(publisher__in =friends)
 
-        queryset = Post.objects.filter(publisher__in =friends)
-
-        if not queryset:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        else:
-            serializer_class = PostSerializer(queryset, many=True)
-            return Response(serializer_class.data, status=status.HTTP_200_OK)
+    # def retrieve(self, request, pk=None):
+    #     user = get_object_or_404(Profile, pk=pk)
+    #     friends = user.get_following()
+    #
+    #     queryset = Post.objects.filter(publisher__in =friends)
+    #
+    #     if not queryset:
+    #         return Response(status=status.HTTP_400_BAD_REQUEST)
+    #     else:
+    #         serializer_class = PostSerializer(queryset, many=True)
+    #         return Response(serializer_class.data, status=status.HTTP_200_OK)
 
 
 class SharedPostsViewSet(viewsets.ModelViewSet):
@@ -207,7 +237,7 @@ class SharedPostsViewSet(viewsets.ModelViewSet):
 
 
 def index(request):
-    latest_post_list = Post.objects.order_by('-pubDate')[:5]
+    latest_post_list = Post.objects.order_by('-pubDate')[:]
     template = loader.get_template('blog/index.html')
     context = {
         'latest_post_list': latest_post_list,
