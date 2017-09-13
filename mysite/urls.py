@@ -32,6 +32,7 @@ router.register(r'TagPosts', views.TagPostsViewSet , 'TagPosts')
 router.register(r'FriendsPosts', views.FriendsPostsViewSet , 'friendsPosts')
 router.register(r'SharedPosts', views.SharedPostsViewSet , 'SharedPosts')
 router.register(r'PostAdd' , views.PostAddViewSet , 'postadd')
+router.register(r'DetailedPost' , views.detailedPostViewSet , 'detailedPost')
 
 router1 = routers.DefaultRouter(trailing_slash=False)
 router1.registry = router.registry[:]

@@ -91,6 +91,7 @@ class PostViewSet(viewsets.ModelViewSet):
     #         serializer_class = PostSerializerAdd(queryset , many=True)
     #         return Response(serializer_class.data, status=status.HTTP_200_OK)
 
+
 class PostAddViewSet(viewsets.ModelViewSet):
     # permission_classes = (,)
     authentication_classes = (SessionAuthentication, BasicAuthentication)
@@ -234,6 +235,20 @@ class SharedPostsViewSet(viewsets.ModelViewSet):
         else:
             serializer_class = PostSerializer(queryset, many=True)
             return Response(serializer_class.data, status=status.HTTP_200_OK)
+
+class detailedPostViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication , BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+    id = 13
+    post = Post.objects.get(pk = id)
+    queryset = DetailedPost.objects.get(post=post)
+    serializer_class = detailedPostSerialzer
+
+    def retrieve(self, request, pk=None):
+        post = Post.objects.get(pk=pk)
+        queryset = DetailedPost.objects.get(post=post)
+        serializer_class = detailedPostSerialzer(queryset )
+        return Response(serializer_class.data, status=status.HTTP_200_OK)
 
 
 def index(request):

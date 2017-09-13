@@ -119,7 +119,7 @@ class Post(models.Model):
         DetailedPost.objects.create(post = self , detailed=detailedPostText)
 
     def get_datiledPost(self):
-        return DetailedPost.objects.filter(post=self)
+        return DetailedPost.objects.get(post=self)
 
     def add_comment(self , user , comText):
         activity = Activity.objects.get_or_create(user=user, post=self)[0]
