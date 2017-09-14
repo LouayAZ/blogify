@@ -123,8 +123,8 @@ class Post(models.Model):
 
     def add_comment(self , user , comText):
         activity = Activity.objects.get_or_create(user=user, post=self)[0]
-        Comment.objects.create(comText = comText,  activity = activity)
-        return
+        comment = Comment.objects.create(comText = comText,  activity = activity)
+        return comment
 
     def like(self , user):
         activity = Activity.objects.get_or_create(user=user, post=self)[0]
@@ -168,6 +168,7 @@ class Activity(models.Model):
     def __str__(self):
         temp = '{0.post} <=> {0.user}'
         return temp.format(self)
+
 
 
 class Comment(models.Model):

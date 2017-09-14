@@ -42,6 +42,7 @@ class detailedPostSerialzer(serializers.ModelSerializer):
         model = DetailedPost
         fields = ('detailed',)
 
+
 class PostSerializerAdd(serializers.ModelSerializer):
     class Meta:
         model = Post
@@ -50,17 +51,37 @@ class PostSerializerAdd(serializers.ModelSerializer):
 
 class ActivitySerializer(serializers.ModelSerializer):
     user = ProfileSerializer()
+
     class Meta:
         model = Activity
-        fields = ('user',)
+        fields = ('user', 'post')
 
 
-class CommentSerializer(serializers.ModelSerializer):
+class CommentSerializer(serializers.HyperlinkedModelSerializer):
     activity = ActivitySerializer()
+    # post = serializers.CharField(source='activity.post')
 
     class Meta:
         model = Comment
         fields = ('comText', 'comDate', 'activity')
+
+    # def create(self, validated_data):
+    #     user = self.context['request'].user
+    #     activity = validated_data.pop('activity')
+    #     # post = validated_data.pop('activity.post')
+    #     # print(post)
+    #     #return post.add_comment(user=Profile.objects.get(user=user) , comText=validated_data.pop('comText'))
+
+class AddCommentSerializer(serializers.ModelSerializer):
+    post = serializers.CharField(write_only=True)
+    class Meta:
+        model = Comment
+        fields = ('comText' , 'post')
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        post = Post.objects.get(pk=validated_data.pop('post'))
+        return post.add_comment(user=Profile.objects.get(user=user), comText=validated_data.pop('comText'))
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -77,4 +98,6 @@ class LikesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
         fields = ('url', 'likeDate', 'activity')
+
+
 

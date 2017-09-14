@@ -134,6 +134,7 @@ class PostCommentsViewSet(viewsets.ModelViewSet):
             return Response(serializer_class.data, status=status.HTTP_200_OK)
 
 
+
 class PostTagsViewSet(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
@@ -205,6 +206,7 @@ class FriendsPostsViewSet(viewsets.ModelViewSet):
         friends = user.get_following()
         return Post.objects.filter(publisher__in =friends)
 
+
     # def retrieve(self, request, pk=None):
     #     user = get_object_or_404(Profile, pk=pk)
     #     friends = user.get_following()
@@ -236,6 +238,7 @@ class SharedPostsViewSet(viewsets.ModelViewSet):
             serializer_class = PostSerializer(queryset, many=True)
             return Response(serializer_class.data, status=status.HTTP_200_OK)
 
+
 class detailedPostViewSet(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication , BasicAuthentication)
     permission_classes = (IsAuthenticated,)
@@ -249,6 +252,22 @@ class detailedPostViewSet(viewsets.ModelViewSet):
         queryset = DetailedPost.objects.get(post=post)
         serializer_class = detailedPostSerialzer(queryset )
         return Response(serializer_class.data, status=status.HTTP_200_OK)
+
+
+class activityViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication , BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+
+    queryset = Activity.objects.all()
+    serializer_class = ActivitySerializer
+
+
+class addCommentViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+
+    queryset = Comment.objects.all()
+    serializer_class = AddCommentSerializer
 
 
 def index(request):
